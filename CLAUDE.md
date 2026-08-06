@@ -43,8 +43,15 @@ flutter analyze                    # static analysis / lint (rules in analysis_o
 
 ## Stack details
 
-- **Backend:** Spring Boot 4.1.0, Java 21 (Gradle toolchain), Spring Web MVC, Lombok, DevTools. Config in `src/main/resources/application.properties` (currently only the app name — no datasource or port overrides yet).
-- **Frontend:** Flutter, Dart SDK `^3.12.2`, Material design. Only `cupertino_icons` beyond the SDK so far — new packages go in `frontend/pubspec.yaml`.
+- **Backend:** Spring Boot 4.1.0, Java 21 (Gradle toolchain), Spring Web MVC, Spring Data JPA + H2 (file mode, `./data/recorddb`), Lombok, DevTools. Config in `src/main/resources/application.properties`.
+- **Frontend:** Flutter, Dart SDK `^3.12.2`, Material design. `http` for REST calls; new packages go in `frontend/pubspec.yaml`. Backend base URL is env-aware in `lib/note_api.dart` (Android emulator → `10.0.2.2`, else `localhost`).
+
+## Dev-only shortcuts (revisit before deploy)
+
+Deliberate simplifications taken to move fast. Tighten these before any real deployment:
+
+- **CORS is wide open.** `NoteController` has `@CrossOrigin(origins = "*")` so the Flutter **web** build (random localhost port) can call the API during development. Mobile/desktop builds don't need it. Before deploy: restrict to the real frontend origin (e.g. `@CrossOrigin(origins = "https://<domain>")`), or move to a central `WebMvcConfigurer` CORS config once there's more than one controller. **This is a backend file — the user owns it; propose changes, don't edit without asking.**
+- **H2 `ddl-auto=update` + file DB.** Fine for learning; production wants schema migrations (Flyway/Liquibase) and a real DB.
 
 ## Behavioral guidelines
 
