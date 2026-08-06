@@ -1,0 +1,5 @@
+# Flutter SDK 클론 (앱 코드 아님, 벤더링된 툴체인) — 추적 안 함
+flutter/
+
+# macOS
+.DS_Store
