@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'compose_page.dart';
 import 'note.dart';
+import 'note_actions.dart';
 import 'note_api.dart';
 
-/// 선택된 날짜의 기록 목록(읽기 전용)을 옆에서 보여주는 임베드 패널.
-/// 항목을 누르면 모달로 제목/내용을 보고 수정·삭제할 수 있다.
-/// 추가는 이 패널이 아니라 캘린더 우상단의 작성 버튼으로 (항상 오늘).
+/// 넓은 화면용: 선택된 날짜의 기록 목록(읽기 전용)을 옆에서 보여주는 패널.
+/// 항목을 누르면 공용 모달로 상세/수정/삭제. 추가는 캘린더 우상단 작성 버튼.
 class DayPanel extends StatefulWidget {
   final DateTime date;
   final VoidCallback onChanged;
@@ -38,50 +37,9 @@ class _DayPanelState extends State<DayPanel> {
     });
   }
 
-  Future<void> _delete(int id) async {
-    await _api.delete(id);
+  void _onChanged() {
     _reload();
     widget.onChanged();
-  }
-
-  Future<void> _edit(Note n) async {
-    final saved = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => ComposePage(existing: n)),
-    );
-    if (saved == true) {
-      _reload();
-      widget.onChanged();
-    }
-  }
-
-  void _openDetail(Note n) {
-    showDialog<void>(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: n.hasTitle ? Text(n.title!) : null, // 제목 없으면 제목 칸 자체를 생략
-        content: SingleChildScrollView(child: Text(n.content)),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogCtx).pop();
-              if (n.id != null) _delete(n.id!);
-            },
-            child: const Text('삭제', style: TextStyle(color: Colors.red)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogCtx).pop();
-              _edit(n);
-            },
-            child: const Text('수정'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('닫기'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -114,7 +72,7 @@ class _DayPanelState extends State<DayPanel> {
                     ListTile(
                       dense: true,
                       title: Text(n.displayTitle, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      onTap: () => _openDetail(n),
+                      onTap: () => showNoteDetailDialog(context, n, _onChanged),
                     ),
                 ],
               );
