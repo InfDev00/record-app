@@ -23,4 +23,15 @@ public class NoteService {
     public void delete(Long id){
         noteRepository.deleteById(id);
     }
+
+    public NoteEntity update(Long id, NoteEntity noteEntity) {
+        NoteEntity note = noteRepository.findById(id).orElseThrow();
+        note.setTitle(noteEntity.getTitle());
+        note.setContent(noteEntity.getContent());
+        return noteRepository.save(note);
+    }
+
+    public List<NoteRepository.DailyCount> counts(LocalDate from, LocalDate to) {
+        return noteRepository.countByDateBetween(from, to);
+    }
 }

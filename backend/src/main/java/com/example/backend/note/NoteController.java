@@ -26,7 +26,19 @@ public class NoteController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id){
+    public void delete(@PathVariable Long id) {
         noteService.delete(id);
+    }
+
+    @PutMapping("/{id}")
+    public NoteEntity update(@PathVariable Long id, @RequestBody NoteEntity note) {
+        return noteService.update(id, note);
+    }
+
+    @GetMapping("/counts")
+    public List<NoteRepository.DailyCount> counts(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return noteService.counts(from, to);
     }
 }

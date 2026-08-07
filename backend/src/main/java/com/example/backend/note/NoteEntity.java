@@ -16,6 +16,9 @@ public class NoteEntity {
 
     private LocalDate date;
 
+    @Column(length = 100)
+    private String title;
+
     @Column(length = 1000)
     private String content;
 }
